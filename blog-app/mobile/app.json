@@ -1,0 +1,53 @@
+{
+  "expo": {
+    "name": "Blog Publisher",
+    "slug": "blog-publisher",
+    "version": "1.0.0",
+    "description": "Write and publish blog posts to WordPress directly from your phone",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.blogpublisher.mobile",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app needs access to camera to take photos for blog posts.",
+        "NSPhotoLibraryUsageDescription": "This app needs access to photo library to select images for blog posts."
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.blogpublisher.mobile",
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.READ_EXTERNAL_STORAGE",
+        "android.permission.WRITE_EXTERNAL_STORAGE",
+        "android.permission.INTERNET"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png",
+      "bundler": "metro"
+    },
+    "plugins": [
+      "expo-camera",
+      "expo-image-picker",
+      "expo-media-library",
+      "expo-sqlite"
+    ],
+    "extra": {
+      "apiUrl": "http://localhost:3000/api"
+    }
+  }
+}

@@ -137,3 +137,13 @@ export default function InputSection({ onGenerateContent, isGenerating }: InputS
     </div>
   );
 }
+
+
+## Blog Publishing Mobile App
+
+This repository contains:
+
+- `backend/` – Node.js Express API powering authentication and WordPress integration.
+- `mobile/` – React Native (Expo) mobile application.
+
+Follow individual READMEs in each folder for setup instructions.

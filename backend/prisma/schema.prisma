@@ -1,0 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  connections Connection[]
+  drafts      Draft[]
+  posts       Post[]
+
+  @@map("users")
+}
+
+model Connection {
+  id          String   @id @default(cuid())
+  userId      String
+  providerId  String   // e.g., "wordpress", "medium", "ghost"
+  name        String   // User-given name for this connection
+  credentials Json     // Encrypted credentials (API keys, tokens, etc.)
+  isActive    Boolean  @default(true)
+  lastSync    DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts Post[]
+
+  @@map("connections")
+}
+
+model Draft {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  content     String   // Rich text/Markdown content
+  excerpt     String?
+  tags        String[] // Array of tags
+  categories  String[] // Array of categories
+  featuredImage String? // Image URL
+  metadata    Json?    // Additional metadata (scheduling, SEO, etc.)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user  User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts Post[] // Posts created from this draft
+
+  @@map("drafts")
+}
+
+model Post {
+  id           String   @id @default(cuid())
+  userId       String
+  draftId      String?
+  connectionId String
+  externalId   String?  // ID from the external provider
+  title        String
+  content      String
+  excerpt      String?
+  tags         String[]
+  categories   String[]
+  featuredImage String?
+  status       PostStatus @default(PUBLISHED)
+  publishedAt  DateTime?
+  metadata     Json?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  draft      Draft?      @relation(fields: [draftId], references: [id], onDelete: SetNull)
+  connection Connection  @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@unique([connectionId, externalId])
+  @@map("posts")
+}
+
+enum PostStatus {
+  DRAFT
+  PUBLISHED
+  SCHEDULED
+  FAILED
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  key       String   @unique
+  isActive  Boolean  @default(true)
+  lastUsed  DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("api_keys")
+}

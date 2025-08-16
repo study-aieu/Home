@@ -1,0 +1,54 @@
+{
+  "name": "universal-blog-publisher-backend",
+  "version": "1.0.0",
+  "description": "Backend for Universal Blog Publisher - publish to 67+ website builders and CMS platforms",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:studio": "prisma studio",
+    "db:seed": "node prisma/seed.js",
+    "test": "jest",
+    "test:watch": "jest --watch"
+  },
+  "keywords": [
+    "blog",
+    "publisher",
+    "cms",
+    "website-builder",
+    "api",
+    "express",
+    "prisma"
+  ],
+  "author": "Universal Blog Publisher Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "prisma": "^5.7.1",
+    "@prisma/client": "^5.7.1",
+    "bcryptjs": "^2.4.3",
+    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "express-validator": "^7.0.1",
+    "multer": "^1.4.5-lts.1",
+    "sharp": "^0.33.1",
+    "axios": "^1.6.2",
+    "dotenv": "^16.3.1",
+    "compression": "^1.7.4",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.2",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "@types/jest": "^29.5.8",
+    "@types/node": "^20.9.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

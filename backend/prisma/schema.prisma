@@ -1,0 +1,187 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  username  String   @unique
+  password  String
+  firstName String?
+  lastName  String?
+  avatar    String?
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  connections Connection[]
+  drafts      Draft[]
+  posts       Post[]
+  images      Image[]
+
+  @@map("users")
+}
+
+model Provider {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  displayName String
+  description String?
+  logo        String?
+  website     String?
+  category    String   // "website-builder", "cms", "static-generator", "ecommerce", "other"
+  features    Json     // Array of supported features
+  authType    String   // "api-key", "oauth", "ftp", "webhook", "custom"
+  authFields  Json     // Required authentication fields
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  connections Connection[]
+
+  @@map("providers")
+}
+
+model Connection {
+  id         String   @id @default(cuid())
+  userId     String
+  providerId String
+  name       String   // User-defined connection name
+  credentials Json    // Encrypted credentials
+  settings   Json?    // Additional settings
+  isActive   Boolean  @default(true)
+  lastSync   DateTime?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider  Provider  @relation(fields: [providerId], references: [id], onDelete: Cascade)
+  posts     Post[]
+
+  @@unique([userId, providerId, name])
+  @@map("connections")
+}
+
+model Draft {
+  id          String   @id @default(cuid())
+  userId      String
+  title       String
+  content     String   // Markdown content
+  excerpt     String?
+  featuredImage String?
+  tags        String[] // Array of tags
+  categories  String[] // Array of categories
+  status      String   @default("draft") // "draft", "published", "archived"
+  scheduledAt DateTime?
+  isPublic    Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  posts  Post[]
+
+  @@map("drafts")
+}
+
+model Post {
+  id           String   @id @default(cuid())
+  draftId      String?
+  userId       String
+  connectionId String
+  externalId   String?  // ID from the external platform
+  title        String
+  content      String   // HTML content
+  excerpt      String?
+  featuredImage String?
+  tags         String[]
+  categories   String[]
+  status       String   @default("published") // "published", "draft", "private", "deleted"
+  publishedAt  DateTime?
+  lastSynced   DateTime @default(now())
+  syncStatus   String   @default("synced") // "synced", "pending", "failed", "deleted"
+  errorMessage String?
+  metadata     Json?    // Platform-specific metadata
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  draft      Draft      @relation(fields: [draftId], references: [id], onDelete: SetNull)
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  connection Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  images     Image[]
+
+  @@map("posts")
+}
+
+model Image {
+  id        String   @id @default(cuid())
+  userId    String
+  postId    String?
+  filename  String
+  originalName String
+  mimeType  String
+  size      Int
+  width     Int?
+  height    Int?
+  url       String
+  thumbnail String?
+  metadata  Json?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post? @relation(fields: [postId], references: [id], onDelete: SetNull)
+
+  @@map("images")
+}
+
+model PublishJob {
+  id           String   @id @default(cuid())
+  userId       String
+  draftId      String
+  status       String   @default("pending") // "pending", "processing", "completed", "failed"
+  progress     Int      @default(0) // 0-100
+  totalTargets Int
+  completed    Int      @default(0)
+  failed       Int      @default(0)
+  results      Json?    // Results for each target
+  errorMessage String?
+  startedAt    DateTime?
+  completedAt  DateTime?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // Relations
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  draft Draft @relation(fields: [draftId], references: [id], onDelete: Cascade)
+
+  @@map("publish_jobs")
+}
+
+model SyncLog {
+  id           String   @id @default(cuid())
+  connectionId String
+  action       String   // "create", "update", "delete", "sync"
+  status       String   // "success", "failed"
+  details      Json?
+  errorMessage String?
+  createdAt    DateTime @default(now())
+
+  // Relations
+  connection Connection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+
+  @@map("sync_logs")
+}

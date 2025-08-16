@@ -1,0 +1,755 @@
+{
+  "info": {
+    "name": "Universal Blog Publisher API",
+    "description": "Complete API collection for the Universal Blog Publisher - publish to 67+ website builders and CMS platforms",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{authToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3001",
+      "type": "string"
+    },
+    {
+      "key": "authToken",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "userId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "draftId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "connectionId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "postId",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "imageId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        }
+      }
+    },
+    {
+      "name": "Authentication",
+      "item": [
+        {
+          "name": "User Signup",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\",\n  \"username\": \"testuser\",\n  \"password\": \"password123\",\n  \"firstName\": \"Test\",\n  \"lastName\": \"User\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/signup",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "signup"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.data.user.token);",
+                  "    pm.collectionVariables.set('userId', response.data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "User Login",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"demo@example.com\",\n  \"password\": \"password123\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/login",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "login"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('authToken', response.data.user.token);",
+                  "    pm.collectionVariables.set('userId', response.data.user.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Current User",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/me",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "me"]
+            }
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/refresh",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/auth/logout",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "auth", "logout"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Providers",
+      "item": [
+        {
+          "name": "Get All Providers",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/providers",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers"]
+            }
+          }
+        },
+        {
+          "name": "Get Providers by Category",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/providers?category=website-builder",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers"],
+              "query": [
+                {
+                  "key": "category",
+                  "value": "website-builder"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Get Provider by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/providers/wordpress",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers", "wordpress"]
+            }
+          }
+        },
+        {
+          "name": "Get Provider Categories",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/providers/categories",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers", "categories"]
+            }
+          }
+        },
+        {
+          "name": "Get Provider Features",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/providers/features",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers", "features"]
+            }
+          }
+        },
+        {
+          "name": "Get Auth Types",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/providers/auth-types",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "providers", "auth-types"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Connections",
+      "item": [
+        {
+          "name": "Get User Connections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/connections",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "connections"]
+            }
+          }
+        },
+        {
+          "name": "Create Connection",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"providerId\": \"wordpress\",\n  \"name\": \"My WordPress Blog\",\n  \"credentials\": {\n    \"siteUrl\": \"https://myblog.com\",\n    \"username\": \"admin\",\n    \"password\": \"password123\"\n  },\n  \"settings\": {\n    \"autoSync\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/connections",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "connections"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('connectionId', response.data.connection.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Connection by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/connections/{{connectionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "connections", "{{connectionId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Connection",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Updated WordPress Blog\",\n  \"settings\": {\n    \"autoSync\": false\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/connections/{{connectionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "connections", "{{connectionId}}"]
+            }
+          }
+        },
+        {
+          "name": "Verify Connection",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/connections/{{connectionId}}/verify",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "connections", "{{connectionId}}", "verify"]
+            }
+          }
+        },
+        {
+          "name": "Sync Connection",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/connections/{{connectionId}}/sync",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "connections", "{{connectionId}}", "sync"]
+            }
+          }
+        },
+        {
+          "name": "Delete Connection",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/connections/{{connectionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "connections", "{{connectionId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Drafts",
+      "item": [
+        {
+          "name": "Get User Drafts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drafts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "drafts"]
+            }
+          }
+        },
+        {
+          "name": "Create Draft",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"My First Blog Post\",\n  \"content\": \"This is the content of my first blog post. It can include **markdown** formatting.\",\n  \"excerpt\": \"A brief summary of my first blog post\",\n  \"tags\": [\"blogging\", \"first-post\"],\n  \"categories\": [\"general\"],\n  \"isPublic\": false\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/drafts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "drafts"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('draftId', response.data.draft.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Draft by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drafts/{{draftId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "drafts", "{{draftId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Draft",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Blog Post Title\",\n  \"content\": \"This is the updated content with more information.\",\n  \"tags\": [\"blogging\", \"first-post\", \"updated\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/drafts/{{draftId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "drafts", "{{draftId}}"]
+            }
+          }
+        },
+        {
+          "name": "Duplicate Draft",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drafts/{{draftId}}/duplicate",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "drafts", "{{draftId}}", "duplicate"]
+            }
+          }
+        },
+        {
+          "name": "Get Draft Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drafts/stats/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "drafts", "stats", "summary"]
+            }
+          }
+        },
+        {
+          "name": "Delete Draft",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/drafts/{{draftId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "drafts", "{{draftId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Publishing",
+      "item": [
+        {
+          "name": "Publish Draft",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"draftId\": \"{{draftId}}\",\n  \"connections\": [\n    {\n      \"connectionId\": \"{{connectionId}}\",\n      \"customFields\": {\n        \"publicationId\": \"123\"\n      }\n    }\n  ],\n  \"publishOptions\": {\n    \"status\": \"published\",\n    \"updateDraftStatus\": true\n  }\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/publish",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "publish"]
+            }
+          }
+        },
+        {
+          "name": "Get Publish Jobs",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publish/jobs",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "publish", "jobs"]
+            }
+          }
+        },
+        {
+          "name": "Get Publish Job Details",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publish/jobs/{{jobId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "publish", "jobs", "{{jobId}}"]
+            }
+          }
+        },
+        {
+          "name": "Get Published Posts",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publish/posts",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "publish", "posts"]
+            }
+          }
+        },
+        {
+          "name": "Update Published Post",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Published Post Title\",\n  \"content\": \"This is the updated content for the published post.\",\n  \"tags\": [\"updated\", \"published\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/publish/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "publish", "posts", "{{postId}}"]
+            }
+          }
+        },
+        {
+          "name": "Sync Published Post",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publish/posts/{{postId}}/sync",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "publish", "posts", "{{postId}}", "sync"]
+            }
+          }
+        },
+        {
+          "name": "Delete Published Post",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/publish/posts/{{postId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "publish", "posts", "{{postId}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Images",
+      "item": [
+        {
+          "name": "Get User Images",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/images",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "images"]
+            }
+          }
+        },
+        {
+          "name": "Upload Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": []
+                },
+                {
+                  "key": "title",
+                  "value": "Sample Image",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "A sample image for testing",
+                  "type": "text"
+                },
+                {
+                  "key": "tags",
+                  "value": "[\"sample\", \"test\"]",
+                  "type": "text"
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/images/upload",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "images", "upload"]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('imageId', response.data.image.id);",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Get Image by ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/images/{{imageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "images", "{{imageId}}"]
+            }
+          }
+        },
+        {
+          "name": "Update Image Metadata",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Image Title\",\n  \"description\": \"Updated image description\",\n  \"tags\": [\"updated\", \"image\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/api/images/{{imageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "images", "{{imageId}}"]
+            }
+          }
+        },
+        {
+          "name": "Reprocess Image",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/images/{{imageId}}/reprocess",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "images", "{{imageId}}", "reprocess"]
+            }
+          }
+        },
+        {
+          "name": "Get Image Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/images/stats/summary",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "images", "stats", "summary"]
+            }
+          }
+        },
+        {
+          "name": "Delete Image",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/api/images/{{imageId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "images", "{{imageId}}"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}
